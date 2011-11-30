@@ -1,4 +1,9 @@
-
+//
+// StripGridDemo2 -- 
+//
+//
+// 2011, Tod E. Kurt, http://todbot.com/blog/
+//
 
 
 #include "HL1606strip.h"
@@ -10,40 +15,24 @@
 
 const int statusLedPin = 13;
 
-const int STRIP_D  = 11;
-const int STRIP_L  = 10;
-const int STRIP_C  = 13;
-const int STRIP_S  = 12;
+const int stripDPin = 11;
+const int stripLPin = 10;
+const int stripCPin = 13;
+const int stripSPin = 12; // optional
 
 
-const int rows = 5;
-const int cols = 6;
+// 10x16 == 160 pixels == one 5m roll
+const int rows = 10;
+const int cols = 16;
 const int pixel_count = rows * cols;
 
 
 #include "Logos.h"
 
-HL1606strip strip = HL1606strip( STRIP_D, STRIP_L, STRIP_C, pixel_count);
+//HL1606strip strip = HL1606strip(STRIP_D,STRIP_S,STRIP_L,STRIP_C,pixel_count);
+HL1606strip strip = HL1606strip( stripDPin, stripLPin, stripCPin, pixel_count);
 StripGrid grid = StripGrid( rows,cols, &strip );
 
-
-// temp var for holding a color value
-color_t colr = {0,0,0};
-
-int i=0,j=0;
-
-
-//
-void setLogo_P(const color_t* logo)
-{
-  for( int i=0; i< rows; i++ ) {
-    for( int j=0; j<cols; j++ ) {
-      memcpy_P( &colr, &logo[i*cols+j], sizeof(color_t) );
-      grid.setLED( i,j, colr );
-    }
-  }
-  grid.update();
-}
 
 
 //
@@ -55,36 +44,41 @@ void setup()
   Serial.begin(19200);
   Serial.println("StripGridDemo2");
 
-  grid.clear();
-  grid.update();
+  grid.begin();
 
-  setLogo_P( logo0 );  // takes 4ms on 5x6, 35ms on 30x40
+  grid.setFrame_P( logo0 ) ;
+  grid.update();
 
 }
 
 boolean toggle = false;
+unsigned long lastMillis;
 //
 void loop()
 {
-  Serial.println("loop");
 
-  //grid.update();
-  
-  /*
-  digitalWrite(statusLedPin, HIGH);
-  delay(100);
-  digitalWrite(statusLedPin, LOW);
-  delay(100);
-  */
+  if( millis() > 3000 ) { 
+    grid.setFrame_P( logo1 );
+    grid.update();
+  }
 
-  // reallly lame brightness control
-  if( millis() > 5000 ) {
-    setLogo_P( (toggle) ? logo1:logo0 ) ;
-    toggle = !toggle;
+  if( 0 ) {
+    // reallly lame brightness control
+    if( (millis() - lastMillis) > 5000 ) {
+      lastMillis = millis();
+      toggle = !toggle;
+      if( toggle ) { 
+        grid.setFrame_P( logo0 ) ;
+        grid.update();
+      } else { 
+        grid.blankStrip();
+      }
+    }
   }
 
 }
 
+/*
 //
 void doitslow()
 {
@@ -113,4 +107,4 @@ void doitslow()
 
 }
 
-
+*/

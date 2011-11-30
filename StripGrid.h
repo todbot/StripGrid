@@ -2,6 +2,7 @@
 // StripGrid - Abstraction of 2 dimentional pixels on LED strips
 //
 //
+// 2011, Tod E. Kurt, http://todbot.com/blog/
 //
 
 
@@ -26,18 +27,13 @@ typedef struct {
 class StripGrid {
     
  public:
-    enum StripTypes {
-        NONE,
-        HL1606,
-        LPD8806,
-    };
-    
- public:
     StripGrid( uint8_t rows, uint8_t cols, HL1606strip* strip );
     HL1606strip* strip;
     uint8_t rows;
     uint8_t cols;
+    uint8_t brightness;
 
+    void begin();
     void update();
 
     void clear();
@@ -46,8 +42,15 @@ class StripGrid {
     void setLED(uint8_t row, uint8_t col, color_t color);
     void setLED(uint8_t row, uint8_t col,uint8_t r,uint8_t g,uint8_t b);
     void getLED(uint8_t row, uint8_t col, color_t* color);
+    void setBrightness(uint8_t b);
+
+    void setFrame( color_t* buf2d );
+    void setFrame_P( const color_t* buf2d );
 
     uint16_t ledpos(uint8_t row, uint8_t col);
+
+    void saveFrame( color_t* savebuf );
+    void blankStrip();
 };
 
 #endif
