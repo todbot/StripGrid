@@ -118,7 +118,7 @@ void plasma_morph()
         Serial.print(" G = "); Serial.print(colorRGB.g, DEC);	
         Serial.print(" B = "); Serial.println(colorRGB.b, DEC);	
         */
-	// matrix.drawPixel(x, y, matrix.Color888(colorRGB.r, colorRGB.g, colorRGB.b)); 
+	//matrix.drawPixel(x,y,matrix.Color888(colorRGB.r, colorRGB.g, colorRGB.b)); 
     grid.setLED( x,y, colorRGB.r, colorRGB.g, colorRGB.b );
 
       }
