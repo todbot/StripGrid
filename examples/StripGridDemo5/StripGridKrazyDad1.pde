@@ -1,8 +1,8 @@
 //
-// StripGridDemo1 -- 
+// StripGridKrazydad1 -- 
 //
 //
-// 2011, Tod E. Kurt, http://todbot.com/blog/
+// 2011, Jim Baumgardner
 //
 
 #include "HL1606strip.h"
