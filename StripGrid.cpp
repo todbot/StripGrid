@@ -134,6 +134,73 @@ void StripGrid::clear()
     fill(black);
 }
 
+
+
+
+// bresenham's algorithm - thx wikpedia
+void StripGrid::drawLine(int8_t x0, int8_t y0, int8_t x1, int8_t y1, 
+                         color_t color ) {
+  uint16_t steep = abs(y1 - y0) > abs(x1 - x0);
+  if (steep) {
+    swap(x0, y0);
+    swap(x1, y1);
+  }
+
+  if (x0 > x1) {
+    swap(x0, x1);
+    swap(y0, y1);
+  }
+
+  uint16_t dx, dy;
+  dx = x1 - x0;
+  dy = abs(y1 - y0);
+
+  int16_t err = dx / 2;
+  int16_t ystep;
+
+  if (y0 < y1) {
+    ystep = 1;
+  } else {
+    ystep = -1;}
+
+  for (; x0<=x1; x0++) {
+    if (steep) {
+      drawPixel(y0, x0, color);
+    } else {
+      drawPixel(x0, y0, color);
+    }
+    err -= dy;
+    if (err < 0) {
+      y0 += ystep;
+      err += dx;
+    }
+  }
+}
+
+// draw a rectangle
+void StripGrid::drawRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, 
+                         color_t color) {
+  drawLine(x, y, x+w-1, y, color);
+  drawLine(x, y+h-1, x+w-1, y+h-1, color);
+
+  drawLine(x, y, x, y+h-1, color);
+  drawLine(x+w-1, y, x+w-1, y+h-1, color);
+}
+
+// fill a rectangle
+void StripGrid::fillRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, 
+                         color_t color) {
+  for (uint8_t i=x; i<x+w; i++) {
+    for (uint8_t j=y; j<y+h; j++) {
+        drawPixel(j,i, color);
+    }
+  }
+}
+
+
+
+
+
 // turn off strip without affecting underlying buffer
 void StripGrid::blankStrip()
 {

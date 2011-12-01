@@ -1,0 +1,74 @@
+//
+// StripGridDemo1 -- 
+//
+//
+// 2011, Tod E. Kurt, http://todbot.com/blog/
+//
+
+#include "HL1606strip.h"
+#include "StripGrid.h"
+
+const int stripDPin = 11;
+const int stripLPin = 10;
+const int stripCPin = 13;
+const int stripSPin = 12; // optional
+
+
+const int rows = 10;
+const int cols = 16;
+const int pixel_count = rows * cols;
+
+//HL1606strip strip = HL1606strip(STRIP_D,STRIP_S,STRIP_L,STRIP_C,pixel_count);
+HL1606strip strip = HL1606strip( stripDPin, stripSPin, stripLPin, stripCPin, pixel_count);
+//HL1606strip strip = HL1606strip( stripDPin,stripLPin,stripCPin, pixel_count);
+StripGrid grid = StripGrid( rows,cols, &strip );
+
+color_t white  = {255,255,255};
+color_t red    = {255,0,0};
+color_t green  = {0,255,0};
+color_t blue   = {0,0,255};
+color_t cyan   = {0,255,255};
+color_t yellow = {255,255,0};
+color_t magenta = {255,0,255};
+color_t off    = {0,0,0};
+
+color_t[] band;
+byte[] ctrs = new byte[rows*cols];
+
+void setup()
+{
+  Serial.begin(19200);
+  Serial.println("StripGridDemo1");
+
+  band = new color_t[6];
+  band[0] = red;
+  band[1] = yellow;
+  band[2] = green;
+  band[3] = cyan;
+  band[4] = blue;
+  band[5] = magenta;
+  
+
+  grid.begin();
+  for (int i = row*cols-1; i >= 0; --i) {
+    ctrs[i] = 0;
+  }
+}
+
+int ctr = 0;
+void loop()
+{
+  int n = 0;
+  for( int j=0; j<cols; j++ ) {
+    for( int i=0; i<rows; i++ ) {
+      grid.setLED( i,j, band[ctrs[n] % 6] );
+      if (ctr % n == 0)
+        ctrs[n]++;
+      n++;
+    }
+  }
+  grid.update();
+  delay(100);
+  ctr++;
+}
+
