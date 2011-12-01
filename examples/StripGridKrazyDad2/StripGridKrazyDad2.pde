@@ -89,10 +89,11 @@ void loop()
     cells[x] = (rules[ocells[(x+cols-1) % cols]] << 2) | (rules[ocells[x]] << 1) | rules[ocells[(x+1)%cols]];
   }
 
+  i = 0;
   for( int y=0; y<rows; y++ ) {
     for( int x=0; x<cols; x++ ) {
-      grid.setLED( y,x, band[ctrs[n] % bandSize] );
-      n++;
+      grid.setLED( y,x, band[cells[i] % bandSize] );
+      i++;
     }
   }
   grid.update();
