@@ -12,7 +12,7 @@
 
 #include <avr/pgmspace.h> 
 
-// asumes the following globals exist
+// assumes the following globals exist
 // rows, cols == rows & col dimenions of grid
 // grid -- StripGrid object
 //
@@ -182,7 +182,7 @@ int16_t sine(double f) {
 }
 
 
-//
+// call in setup()
 void plasma_begin()
 {
   // start with morphing plasma, but allow going to color cycling if desired.
@@ -204,7 +204,7 @@ void plasma_begin()
  
 }
 
-//
+// call regularly in loop()
 void plasma_morph()
 {
   unsigned char x,y;
