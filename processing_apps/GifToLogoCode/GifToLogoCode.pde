@@ -175,7 +175,7 @@ void showText()
   
   dialog.setPreferredSize( new Dimension(600,450));
   dialog.setResizable(true);
-  dialog.setLocationRelativeTo(frame); // center it on the BlinkMSequencer
+  dialog.setLocationRelativeTo(frame); // center it 
   dialog.pack();
   dialog.setVisible(true);
   
