@@ -1,36 +1,43 @@
 //
-//
+// GifToLogoCode --Generate Arduino code from GIF images
 // 
+// 2011, Tod E. Kurt, http://todbot.com/blog/
+// 
+// Note: the gif files must be in the "data" folder of the sketch
+//
 
+// for animated gif support  http://www.extrapixel.ch/processing/gifAnimation/
+import gifAnimation.*;
+
+// for pop-up text box
 import javax.swing.*;
 import java.awt.*;
 
-// The files must be in the "data" folder of the sketch
 
 int rows = 10;
 int cols = 16;
 
-int scale = 20;
-int viewMillis = 100;
+int scale = 20;       // scale magnification for viewing
+int viewMillis = 100; // how long to wait between images when viewing
 
-String[] imgNames;
-PImage[] imgs = new PImage[10];
-String textstr;
+String[] imgPaths;
+ArrayList<String> imgNames = new ArrayList();
+ArrayList<PImage> imgs = new ArrayList();
+String textstr=""; 
+
+Gif myGif;
 
 //
 void setup() 
 {
   size(cols*scale, rows*scale);
 
-  textstr  = "//\n";
-  textstr += "// Logos.h -- place this file in your StripGrid Arduino sketch folder\n";
-  textstr += "//\n";
-  textstr += "// Generated on "+year()+"/"+month()+"/"+day()+"@"+hour()+":"+minute()+"\n\n";
-  textstr += "const int rows="+rows+";\n";
-  textstr += "const int cols="+cols+";\n";
+  getImagePaths();
 
-  getImageNames();
-  
+  getImages(); // all images are now loaded
+
+  generateCode();
+
 }
 
 int i=0;
@@ -41,38 +48,54 @@ void draw()
 {
   if( !done && (millis() - lastMillis) > viewMillis ) { 
     lastMillis = millis();
-    imgs[i] = imageToFrameCode( imgNames[i] );
-    image( imgs[i], 0,0, cols*scale, rows*scale );  
+    PImage img = imgs.get(i);
+    image( img, 0,0, cols*scale, rows*scale );  
     i++;
-    if( i == imgNames.length ) { // done!
+    if( i == imgs.size() ) { // done!
       done = true;
-      textstr += "\n// list of all the logos\n";
-      textstr += "const int logoListCount = "+imgNames.length+";\n";
-      textstr += "const PROGMEM color_t* logoList[] = {\n";
-      for( int i=0; i<imgNames.length; i++ ) { 
-        String name = nameFromImageName( imgNames[i] );
-        textstr += "  "+name+",\n";
-      }
-      textstr += "};\n";
-      textstr += "// end of file\n";
       showText();
     }
   }
 }
 
-String nameFromImageName( String imgname ) 
-{
-  String name = imgname.replaceAll("\\.gif","");
-  name = name.replaceAll("\\-","");
-  return name;
-}
 
-//
-PImage imageToFrameCode( String imgname ) 
+// generate code text from images
+void generateCode()
 {
-  String name = nameFromImageName( imgname );
+  textstr += "//\n";
+  textstr += "// Logos.h -- place this file in your StripGrid Arduino sketch folder\n";
+  textstr += "//\n";
+  textstr += "// Generated on "+year()+"/"+month()+"/"+day()+"@"+hour()+":"+minute()+"\n\n";
+  textstr += "const int rows="+rows+";\n";
+  textstr += "const int cols="+cols+";\n";
+
+  for( int i=0; i< imgs.size(); i++ ) {
+    PImage img = imgs.get(i);
+    String name = imgNames.get(i);
+    textstr += imageToFrameCode( img, name ); 
+  }
+
+  textstr += "\n// list of all the logos\n";
+  textstr += "const int logoListCount = "+imgs.size()+";\n";
+  textstr += "const int logoListDurations[] = {\n";
+  for( int i=0; i<imgNames.size(); i++ ) { 
+    String name = imgNames.get(i);
+    int duration = 1000;
+    textstr += "  "+duration+", // "+name+"\n";
+  }
+  textstr += "};\n";
+  textstr += "const PROGMEM color_t* logoList[] = {\n";
+  for( int i=0; i<imgNames.size(); i++ ) { 
+    textstr += "  "+ imgNames.get(i)+",\n";
+  }
+  textstr += "};\n";
+  textstr += "// end of file\n";
+  
+}
+//
+String imageToFrameCode( PImage img, String name )
+{
   String thistext = "\nconst PROGMEM color_t "+name+"[rows*cols] = {\n";
-  PImage img = loadImage( imgname ); 
   
   img.loadPixels(); // get the pixels[] array populated
   for( int i=0; i< rows; i++ ) {
@@ -88,29 +111,50 @@ PImage imageToFrameCode( String imgname )
   }
   thistext += "};\n";
 
-  textstr += thistext; // FIXME: don't rely on globals
+  return thistext;
+}
 
-  return img;
+// get PImages for all gifs, explodes animated gifs too
+void getImages()
+{
+  for( int i=0; i< imgPaths.length; i++ ) { 
+    String imgpath = imgPaths[i];
+    String name = nameFromImagePath( imgpath );
+    PImage[] anim = Gif.getPImages(this, imgpath );
+    for( int j=0; j<anim.length; j++ ) { 
+      imgNames.add( name+j ); // makes name0, name1, name2, etc.
+      imgs.add( anim[j] );    // but may only be one frame
+    }
+  }
 }
 
 //
-void getImageNames() 
+String nameFromImagePath( String imgpath ) 
+{
+  String name = imgpath.replaceAll("\\.gif","");
+  name = name.replaceAll("\\-","");
+  return name;
+}
+
+//
+void getImagePaths() 
 {
   // http://exampledepot.com/egs/java.io/GetFiles.html
   println("sketchPath: "+sketchPath);
   String imgPath = sketchPath + File.separator + "data";
   File dir = new File(imgPath);
-  imgNames = dir.list();
-  if( imgNames == null ) {
+  imgPaths = dir.list();
+  if( imgPaths == null ) {
     // dir doesn't exist or not a directory
   } 
   else {
-    for( int i=0; i<imgNames.length; i++) {
-      String filename = imgNames[i];
-      println("imgNames["+i+"]: "+filename);
+    for( int i=0; i<imgPaths.length; i++) {
+      String filename = imgPaths[i];
+      println("imgPaths["+i+"]: "+filename);
     }
   }
 }
+
 
 //
 void showText()
