@@ -1,7 +1,8 @@
 StripGrid an Arduino library for controlling RGB LED strips.
 
 StripGrid currently only works with HL1606-based strips.  
-StripGrid depends on the Adafruit HL1606 library at:
+
+StripGrid's HL1606 code is based on the Adafruit HL1606 library:
   https://github.com/adafruit/HL1606-LED-Strip
 
 
