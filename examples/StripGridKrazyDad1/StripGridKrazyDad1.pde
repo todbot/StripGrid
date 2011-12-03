@@ -2,7 +2,7 @@
 // StripGridKrazydad1 -- 
 //
 //
-// 2011, Jim Baumgardner
+// 2011, Jim Bumgardner
 //
 
 #include "HL1606strip.h"
