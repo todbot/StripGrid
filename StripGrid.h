@@ -9,6 +9,7 @@
 #ifndef StripGrid_h
 #define StripGrid_h
 
+
 #if (ARDUINO >= 100)
 #include <Arduino.h>
 #else
@@ -16,24 +17,28 @@
 #endif
 
 
-#include "HL1606strip.h";
+#include "StripHL1606.h"
+
+
+enum StripType {
+    StripTypeHL1606,
+    StripTypeNONE,
+};
 
 #define swap(a, b) { uint16_t t = a; a = b; b = t; }
 
-typedef struct {
-    uint8_t r;
-    uint8_t g;
-    uint8_t b;
-} color_t;
 
 class StripGrid {
-    
+
  public:
-    StripGrid( uint8_t rows, uint8_t cols, HL1606strip* strip );
-    HL1606strip* strip;
+    //StripGrid( uint8_t rows, uint8_t cols, StripType );
+    StripGrid( uint8_t r, uint8_t c, 
+               uint8_t dPin, uint8_t cPin, uint8_t lPin, uint8_t sPin,  
+               StripType type );
+    Strip* strip;
+
     uint8_t rows;
     uint8_t cols;
-    uint8_t brightness;
 
     void begin();
     void update();
@@ -44,7 +49,6 @@ class StripGrid {
     void setLED(uint8_t row, uint8_t col, color_t color);
     void setLED(uint8_t row, uint8_t col,uint8_t r,uint8_t g,uint8_t b);
     void getLED(uint8_t row, uint8_t col, color_t* color);
-    void setBrightness(uint8_t b);
 
     void setFrame( color_t* buf2d );
     void setFrame_P( const color_t* buf2d );

@@ -23,14 +23,21 @@
 #include <avr/pgmspace.h>
 
 //
-StripGrid::StripGrid( uint8_t r, uint8_t c, HL1606strip* s)
+StripGrid::StripGrid( uint8_t r, uint8_t c, 
+                      uint8_t dPin, uint8_t cPin, uint8_t lPin, uint8_t sPin,  
+                      StripType type )
 {
+    int pixel_count = r*c;
+    if( type == StripTypeHL1606 ) { 
+        strip = new StripHL1606( dPin, cPin, lPin, sPin, pixel_count);
+    }
+    else { 
+        // what?
+    }
+
     rows = r;
     cols = c;
 
-    brightness = 255;
-
-    strip = s;
 }
 
 void StripGrid::begin()
@@ -42,7 +49,7 @@ void StripGrid::begin()
 //
 void StripGrid::update() 
 {
-  strip->writeStrip();
+  strip->update();
 
   /*
   if( brightness < 255 ) { 
@@ -76,32 +83,13 @@ void StripGrid::setLED(uint8_t row, uint8_t col,
 //
 void StripGrid::setLED(uint8_t row, uint8_t col, color_t color)
 {
-    uint8_t hl1606color = 0b000; // 1-bit per color channel
-    boolean otherLEDLayout = true; // FIXME
-    if( otherLEDLayout ) { 
-        if( color.r > 127 )  hl1606color |= RED ;
-        if( color.g > 127 )  hl1606color |= BLUE;
-        if( color.b > 127 )  hl1606color |= GREEN;
-    } else { 
-        if( color.r > 127 )  hl1606color |= RED ;
-        if( color.g > 127 )  hl1606color |= GREEN;
-        if( color.b > 127 )  hl1606color |= BLUE;
-    }
-    strip->setLEDcolor( ledpos(row,col), hl1606color );
+    strip->setLEDcolor( ledpos(row,col), color );
 }
 
 //
 void StripGrid::getLED(uint8_t row, uint8_t col, color_t* color) 
 {
-    int v = strip->getLEDcolor( ledpos(row,col) ); // FIXME
-    color->r = (v & _BV(2) ) ? 255 : 0;
-    color->g = (v & _BV(1) ) ? 255 : 0;
-    color->b = (v & _BV(0) ) ? 255 : 0;
-}
-
-void StripGrid::setBrightness(uint8_t b)
-{
-    brightness = b;
+    strip->getLEDcolor( ledpos(row,col), color ); 
 }
 
 //
@@ -204,10 +192,7 @@ void StripGrid::fillRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h,
 // turn off strip without affecting underlying buffer
 void StripGrid::blankStrip()
 {
-    for (uint8_t i=0; i< rows*cols; i++) {
-        strip->pushCmd( 0x80 ); // latch
-    }
-    strip->latch();
+    strip->blank();
 }
 
 

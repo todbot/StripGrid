@@ -1,9 +1,13 @@
 StripGrid an Arduino library for controlling RGB LED strips.
 
-It currently only works with HL1606-based strips.
+StripGrid currently only works with HL1606-based strips.  
+StripGrid depends on the Adafruit HL1606 library at:
+  https://github.com/adafruit/HL1606-LED-Strip
 
 
-Assumes strips are wired in a serpentine fashion, minimizing wire length.
+Layout of strips
+-----------------
+Strips are assumed to be wired in a serpentine fashion, minimizing wire length.
 For example, a rows=4,cols=7 grid is wired like:
 
  row/col  0     1     2     3     4     5     6

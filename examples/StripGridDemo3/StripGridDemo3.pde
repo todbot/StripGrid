@@ -6,7 +6,6 @@
 //
 //
 
-#include "HL1606strip.h"
 #include "StripGrid.h"
 
 
@@ -16,22 +15,22 @@
 const int statusLedPin = 13;
 
 const int stripDPin = 11;
-const int stripLPin = 10;
 const int stripCPin = 13;
+const int stripLPin = 10;
 const int stripSPin = 12;
 
 
 // 10x16 == 160 pixels == one 5m roll
 const int rows = 10;
 const int cols = 16;
-const int pixel_count = rows * cols;
+
+StripGrid grid = StripGrid( rows,cols,
+                            stripDPin, stripCPin, stripLPin, stripSPin, 
+                            StripTypeHL1606 );
 
 
 #include "Logos.h"
 
-HL1606strip strip = HL1606strip( stripDPin, stripSPin, stripLPin, stripCPin, pixel_count);
-//HL1606strip strip = HL1606strip( stripDPin,stripLPin,stripCPin, pixel_count);
-StripGrid grid = StripGrid( rows,cols, &strip );
 
 
 // temp var for holding a color value

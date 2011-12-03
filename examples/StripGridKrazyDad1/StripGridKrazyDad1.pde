@@ -2,26 +2,25 @@
 // StripGridKrazydad1 -- 
 //
 //
-// 2011, Jim Baumgardner
+// 2011, Jim Bumgardner
 //
 
-#include "HL1606strip.h"
+
 #include "StripGrid.h"
 
 const int stripDPin = 11;
-const int stripLPin = 10;
 const int stripCPin = 13;
+const int stripLPin = 10;
 const int stripSPin = 12; // optional
 
 
 const int rows = 10;
 const int cols = 16;
-const int pixel_count = rows * cols;
 
-//HL1606strip strip = HL1606strip(STRIP_D,STRIP_S,STRIP_L,STRIP_C,pixel_count);
-HL1606strip strip = HL1606strip( stripDPin, stripSPin, stripLPin, stripCPin, pixel_count);
-//HL1606strip strip = HL1606strip( stripDPin,stripLPin,stripCPin, pixel_count);
-StripGrid grid = StripGrid( rows,cols, &strip );
+StripGrid grid = StripGrid( rows,cols,
+                            stripDPin, stripCPin, stripLPin, stripSPin, 
+                            StripTypeHL1606 );
+
 
 color_t white  = {255,255,255};
 color_t red    = {255,0,0};

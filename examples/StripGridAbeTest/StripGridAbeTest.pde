@@ -8,7 +8,6 @@
 
 #include <avr/pgmspace.h>
 
-#include "HL1606strip.h"
 #include "StripGrid.h"
 
 #include "Logos.h"
@@ -20,6 +19,8 @@ enum {
     MODE_PLASMA,
     MODE_LOGOS,
     MODE_SPARKLES,
+    MODE_PIXELZIP,
+    //MODE_WIPES,
     MODE_NONE,
 };
       
@@ -39,15 +40,20 @@ const int stripSPin = 12;
 const int buttonPin = 8;
 
 
-HL1606strip strip = HL1606strip( stripDPin, stripSPin, stripLPin, stripCPin, rows*cols);
-StripGrid grid = StripGrid( rows,cols, &strip );
+StripGrid grid = StripGrid( rows,cols,
+                            stripDPin, stripCPin, stripLPin, stripSPin, 
+                            StripTypeHL1606 );
 
+
+color_t colr;  // for temp color uses
 unsigned long lastMillis;
 int imgi=0;
 
 
 #include "Plasma.h"
 #include "Sparkles.h"
+#include "Wipes.h"
+#include "PixelZip.h"
 
 //
 void setup()
@@ -70,21 +76,41 @@ void setup()
 }
 
 //
+void modeSwitch(int m)
+{
+  if( m<0 ) {  // m = -1 means do next mode
+    mode++;
+  }
+  else { 
+    mode = m;
+  }
+  // wrap around
+  if( mode >= MODE_NONE ) {
+    mode = MODE_OFF;
+  }
+  // reset any mode variables
+  imgi = 0;
+  
+  Serial.print("mode="); Serial.println(mode);
+}
+
+//
 void loop()
 {
   // begin mode switch code 
+  
   if( digitalRead( buttonPin ) == LOW ) { 
     delay( 100 );
     if( digitalRead( buttonPin ) == LOW ) { // make sure (simple debounce)
-      mode++;
-      if( mode == MODE_NONE ) {
-        mode = MODE_OFF;
-      }
-      imgi=0;
+      modeSwitch(-1);
     }
     while( digitalRead(buttonPin) == LOW ); // wait it out
-    Serial.print("mode="); Serial.println(mode);
   }
+  if( Serial.available() ) {
+    while( Serial.read() != -1 ); // just consume
+    modeSwitch(-1);
+  }
+
   // end mode switch code 
 
 
@@ -93,11 +119,18 @@ void loop()
   }
   else if( mode == MODE_LOGOS ) {
     logo_update();
-
   }
   else if( mode == MODE_SPARKLES ) { 
     sparkles_update();
   }
+  else if( mode == MODE_PIXELZIP ) { 
+    pixelzip_update();
+  }
+  /*
+  else if( mode == MODE_WIPES ) { 
+    wipes_update();
+  }
+  */
   else if( mode == MODE_OFF ) { 
     grid.clear();
     grid.update();
