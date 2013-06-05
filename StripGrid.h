@@ -18,10 +18,12 @@
 
 
 #include "StripHL1606.h"
+#include "StripLPD8806.h"
 
 
 enum StripType {
     StripTypeHL1606,
+    StripTypeLPD8806,
     StripTypeNONE,
 };
 
@@ -32,6 +34,8 @@ class StripGrid {
 
  public:
     //StripGrid( uint8_t rows, uint8_t cols, StripType );
+    // let's just assume all grids will have data, clock, latch, and sPin
+    // (that's the most it could have, in this world, could be less tho(
     StripGrid( uint8_t r, uint8_t c, 
                uint8_t dPin, uint8_t cPin, uint8_t lPin, uint8_t sPin,  
                StripType type );

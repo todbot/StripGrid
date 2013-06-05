@@ -17,9 +17,13 @@ const int stripSPin = 12; // optional
 const int rows = 10;
 const int cols = 16;
 
-StripGrid grid = StripGrid( rows,cols, 
+#if 0 
+StripGrid grid = StripGrid( rows,cols,
                             stripDPin, stripCPin, stripLPin, stripSPin, 
                             StripTypeHL1606 );
+#else 
+StripGrid grid = StripGrid( rows,cols, stripDPin, stripCPin, StripTypeLPD8806 );
+#endif
 
 color_t white  = {255,255,255};
 color_t red    = {255,  0,  0};

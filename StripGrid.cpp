@@ -31,6 +31,12 @@ StripGrid::StripGrid( uint8_t r, uint8_t c,
     if( type == StripTypeHL1606 ) { 
         strip = new StripHL1606( dPin, cPin, lPin, sPin, pixel_count);
     }
+    else if( type == StripTypeLPD8806 ) { 
+        if( dPin == 0 && cPin == 0 ) {  // hardware SPI
+            strip =  new StripLPD8806( pixel_count);
+        } else {
+            strip =  new StripLPD8806( dPin, cPin, pixel_count);
+        }
     else { 
         // what?
     }
@@ -39,6 +45,7 @@ StripGrid::StripGrid( uint8_t r, uint8_t c,
     cols = c;
 
 }
+
 
 void StripGrid::begin()
 {
